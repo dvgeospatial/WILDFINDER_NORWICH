@@ -95,6 +95,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 pane: 'boundaryPane'
             }).addTo(map);
             mapState.polygonBounds = boundaryLayer.getBounds();
+            const maxBounds = mapState.polygonBounds.pad(0.1);
+            map.setMaxBounds(maxBounds);
 
             const panel = document.getElementById('control-panel');
             const paddingOpts = window.innerWidth >= 640 && !panel.classList.contains('translate-x-full')
