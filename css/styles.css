@@ -1,0 +1,130 @@
+.osm-grayscale { filter: grayscale(100%) opacity(0.8); }
+#cluster-popup {
+    position: absolute;
+    z-index: 1050;
+    min-width: 260px;
+    max-width: 340px;
+    max-height: 360px;
+    display: flex;
+    flex-direction: column;
+    background: rgba(255,255,255,0.97);
+    border: 1px solid #d1d5db;
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    overflow: hidden;
+    transition: opacity 0.15s ease;
+    pointer-events: all;
+}
+#cluster-popup.hidden { display: none; }
+#cluster-popup-list { overflow-y: auto; flex: 1; }
+.leaflet-control-attribution {
+    font-size: 10px !important;
+    line-height: 1.5 !important;
+    background: rgba(255, 255, 255, 0.92) !important;
+    backdrop-filter: blur(4px);
+    padding: 4px 8px !important;
+    border-radius: 4px !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12) !important;
+    max-width: 700px;
+    white-space: normal !important;
+    word-break: break-word;
+}
+.leaflet-control-attribution a { color: #406381 !important; text-decoration: underline; }
+.leaflet-bottom.leaflet-right { transition: padding-right 300ms ease-in-out; }
+.help-body { color: #406381; font-size: 0.95rem; line-height: 1.75; }
+.help-body p { margin-bottom: 0; }
+.help-body a {
+    color: #BCCB54;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.15s ease;
+}
+.help-body a:hover { color: #a8b847; }
+.help-subheading {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #406381;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+}
+.help-divider { border: none; border-top: 1px solid rgba(64, 99, 129, 0.2); margin: 0; }
+.panel-section-label { font-size: 0.95rem; font-weight: 600; color: #406381; margin-bottom: 0.75rem; }
+.taxon-label, .access-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #406381;
+    cursor: pointer;
+    padding: 0.5rem 0.625rem;
+    margin-left: -0.5rem;
+    border-radius: 0.5rem;
+    transition: background 0.15s ease, color 0.15s ease;
+    line-height: 1.4;
+}
+.taxon-label:hover, .access-label:hover { background-color: rgba(188, 203, 84, 0.15); color: #2f4a60; }
+.taxon-label:has(input[type="radio"]:checked), .access-label:has(input[type="checkbox"]:checked) { background-color: rgba(188, 203, 84, 0.18); color: #2f4a60; }
+.taxon-label input[type="radio"], .access-label input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 1.1rem;
+    height: 1.1rem;
+    border: 2px solid #406381;
+    flex-shrink: 0;
+    position: relative;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+.taxon-label input[type="radio"] { border-radius: 50%; }
+.access-label input[type="checkbox"] { border-radius: 0.25rem; }
+
+.taxon-label input[type="radio"]:checked { border-color: #044733; background-color: #044733; }
+.access-label input[type="checkbox"]:checked { border-color: #BCCB54; background-color: #BCCB54; }
+.taxon-label input[type="radio"]:focus-visible { outline: 2px solid #044733; outline-offset: 2px; }
+.access-label input[type="checkbox"]:focus-visible { outline: 2px solid #BCCB54; outline-offset: 2px; }
+
+.taxon-label input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    background: #fff;
+    border-radius: 50%;
+}
+.access-label input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 4px;
+    width: 5px;
+    height: 9px;
+    border: 2px solid #fff;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+}
+.access-spinner { margin-left: auto; flex-shrink: 0; width: 1rem; height: 1rem; color: #BCCB54; }
+#wisefrog-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem max(1.25rem, env(safe-area-inset-bottom));
+    border-top: 1px solid rgba(64, 99, 129, 0.12);
+    flex-shrink: 0;
+    background: inherit;
+    z-index: 10;
+}
+#wisefrog-footer span {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #406381;
+    opacity: 0.5;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    line-height: 1;
+}
+#wisefrog-footer img { height: 28px; width: auto; display: block; opacity: 0.6; transition: opacity 0.15s ease; }
+#wisefrog-footer:hover span { opacity: 0.85; }
+#wisefrog-footer:hover img { opacity: 1; }

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nature Observations: Norwich District</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" crossorigin=""/>
+    <link rel="stylesheet" href="css/styles.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+</head>
+<body class="m-0 p-0 antialiased overflow-hidden h-[100dvh] w-screen relative font-sans text-gray-800">
+
+    <button id="open-panel-btn" class="absolute top-4 right-4 z-[999] px-3 py-2 rounded-lg shadow-md text-white font-bold hidden transition-all border border-transparent flex items-center gap-2" style="background-color:#044733;" aria-label="Open Menu" onmouseover="this.style.backgroundColor='#055a41'" onmouseout="this.style.backgroundColor='#044733'">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+        Menu
+    </button>
+
+    <div id="control-panel" class="fixed top-0 right-0 bottom-0 z-[1000] w-full sm:w-[360px] flex flex-col bg-white/95 backdrop-blur-md shadow-2xl border-l border-gray-200 transition-transform duration-300 ease-in-out translate-x-0">
+        <button id="close-panel-btn" class="absolute top-3 right-3 z-[1001] p-2 text-gray-500 hover:text-gray-800 transition-colors bg-white/80 backdrop-blur rounded-full shadow-sm" aria-label="Close Menu">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+
+        <div class="flex-1 overflow-y-auto p-5 pt-14 sm:p-6 sm:pt-12">
+            <div class="mb-4 sm:mb-6 pb-4 sm:pb-6 border-b border-gray-100 flex justify-center">
+                <img src="https://firebasestorage.googleapis.com/v0/b/naturecitynorwich.firebasestorage.app/o/Assets%2FwildFinderNorwich_with_text.webp?alt=media&token=57a6ec3a-8024-4e48-bd52-517d5678854a" alt="Norwich Logo" class="w-full max-w-[350px] h-auto sm:max-w-none object-contain rounded">
+            </div>
+
+            <div class="mb-5 sm:mb-6 space-y-3">
+                <button id="help-info-btn" class="w-full flex items-center justify-center gap-2 text-white font-bold px-4 py-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors" style="background-color:#044733;" aria-label="Open help and information" onmouseover="this.style.backgroundColor='#055a41'" onmouseout="this.style.backgroundColor='#044733'">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 1.918-2 3.522-2 2.21 0 4 1.343 4 3 0 1.34-1.172 2.475-2.786 2.87-.897.22-1.214.55-1.214 1.13V15m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    Help and Information
+                </button>
+                <button id="show-map-btn" class="w-full flex items-center justify-center gap-2 text-white font-bold px-4 py-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors" style="background-color:#044733;" aria-label="Show Map" onmouseover="this.style.backgroundColor='#055a41'" onmouseout="this.style.backgroundColor='#044733'">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>
+                    Show Map
+                </button>
+            </div>
+
+            <div class="border-t border-gray-200 pt-5">
+                <p class="panel-section-label">Wildlife group (Iconic Taxa)</p>
+                <div class="space-y-0.5" id="taxon-radios"></div>
+            </div>
+
+            <div class="border-t border-gray-200 pt-5 mt-5">
+                <p class="panel-section-label">Public Access</p>
+                <div class="space-y-0.5" id="access-toggles"></div>
+            </div>
+        </div>
+
+        <div id="wisefrog-footer">
+            <span>smart mapping by wisefrog</span>
+            <a href="https://wisefrog.co.uk/" target="_blank" rel="noopener noreferrer" aria-label="Wise Frog Limited">
+                <img src="https://tourmaline-pudding-0fce6c.netlify.app/assets/logos/frog_best.svg" alt="WiseFrog logo">
+            </a>
+        </div>
+    </div>
+
+    <!-- Cluster List Popup -->
+    <div id="cluster-popup" class="hidden">
+        <div class="flex items-center justify-between gap-3 px-4 py-3 border-b border-gray-100 flex-shrink-0">
+            <div>
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Cluster Records</p>
+                <p id="cluster-popup-summary" class="text-sm font-semibold text-emerald-800 mt-0.5"></p>
+            </div>
+            <button id="cluster-popup-close" class="p-1.5 text-gray-400 hover:text-gray-700 rounded-full hover:bg-gray-100 transition-colors flex-shrink-0" aria-label="Close">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+        </div>
+        <div id="cluster-popup-list" class="px-3 py-2 space-y-1.5"></div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="fixed inset-0 z-[1100] hidden" aria-hidden="true">
+        <div id="help-modal-backdrop" class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4 sm:p-6">
+            <div role="dialog" aria-modal="true" aria-labelledby="help-modal-title" class="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-2xl bg-white shadow-2xl border border-gray-200">
+                <div class="sticky top-0 bg-white/95 backdrop-blur border-b px-6 py-5 flex items-start justify-between gap-4" style="border-color: rgba(64,99,129,0.2);">
+                    <div class="flex-1 text-center"><h3 id="help-modal-title" class="text-xl font-bold text-[#406381]">Welcome to Norwich wildFinder!</h3></div>
+                    <button id="close-help-modal-btn" class="p-2 hover:bg-blue-50 transition-colors rounded-full flex-shrink-0" style="color:#406381;" aria-label="Close">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+                <div class="px-6 py-6 space-y-0 help-body">
+                    <section class="pb-5">
+                        <h4 class="help-subheading">Discover the Biodiversity of Norwich</h4>
+                        <p>A growing community of citizen scientists are using <a href="https://uk.inaturalist.org" target="_blank" rel="noopener noreferrer">iNaturalist</a> ,one of the worlds most popular nature apps, to log a remarkable diversity of wildlife across Norwich. You can use the <strong>Norwich wildFinder</strong> to easily browse their observations on a map. To get started, use the menu on the right to select a wildlife group that interests you — choose from birds, insects, plants, fungi, mammals and more and then click the Show Map button to see these observations plotted on the map. At the initial zoom level the map displays a dark blue grid showing where sightings for your chosen wildife group are concentrated across the area. As you zoom in close individual sighting markers will appear; click any marker to see details of the species recorded at that location. Click the scientific name to open a species search in wikipedia to find out more, and click the iNaturalist link to see more details of that particular observation and the person that made it. You can open and close the side panel using the menu button if you want a fuller view of the map.</p>
+
+                    <hr class="help-divider">
+                    <section class="pt-5">
+                        <h4 class="help-subheading">Become a Citizen Scientist</h4>
+                        <p>Why not become a citizen scientist! nature needs you — and you don't have to be an expert to make an important difference! By downloading the free <a href="https://uk.inaturalist.org" target="_blank" rel="noopener noreferrer">iNaturalist</a> app on your smartphone, you can record the plants and animals you encounter on your walks through Norwich. Every photo you snap and share helps us understand and protect our local environment. Any observations you record on iNaturalist will automatically appear on this Norwich wildFinder map.</p>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- In-App Wikipedia Species Modal -->
+    <div id="species-modal" class="fixed inset-0 z-[1200] hidden" aria-hidden="true">
+        <div id="species-modal-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4 sm:p-6 pointer-events-none">
+            <div role="dialog" class="relative w-full max-w-lg max-h-[85vh] flex flex-col rounded-2xl bg-white shadow-2xl border border-gray-200 overflow-hidden pointer-events-auto">
+                <div class="bg-white/95 backdrop-blur border-b border-gray-100 px-5 py-4 flex items-center justify-between gap-4 shrink-0">
+                    <div class="flex-1 min-w-0">
+                        <h3 id="species-modal-title" class="text-lg font-bold text-[#406381] truncate">Loading...</h3>
+                        <p id="species-modal-subtitle" class="text-sm italic text-gray-500 truncate"></p>
+                    </div>
+                    <button id="close-species-modal-btn" class="p-2 hover:bg-gray-100 transition-colors rounded-full flex-shrink-0 text-gray-500">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+                <div id="species-modal-content" class="px-5 py-5 overflow-y-auto help-body flex-1 bg-white">
+                    <div class="flex justify-center my-8">
+                        <svg class="animate-spin h-8 w-8 text-[#BCCB54]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="map" class="absolute inset-0 z-0"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="https://unpkg.com/esri-leaflet/dist/esri-leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js" crossorigin=""></script>
+    
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
