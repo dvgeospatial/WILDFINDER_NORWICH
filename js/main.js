@@ -1,7 +1,7 @@
-import { CONSTANTS, ATTR } from './config.js';
+import { CONSTANTS } from './config.js';
 import { initUI, hideClusterPopup, showClusterPopup, state } from './ui.js';
 import { initModals } from './modals.js';
-import { createMap, loadAccessLayer, refreshGridLayer, updateMapLayer } from './map.js';
+import { createMap, refreshGridLayer, updateMapLayer } from './map.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -27,8 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
             iconAnchor: new L.Point(20, 20),
             popupAnchor: new L.Point(0, -20)
         }),
-        layerGroups: { greenspace: L.layerGroup() },
-        layerLoaded: { greenspace: false }
     };
 
     const map = createMap();
@@ -58,17 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const clusterPopup = document.getElementById('cluster-popup');
     document.getElementById('cluster-popup-close').addEventListener('click', () => hideClusterPopup(mapState));
-
-    ['greenspace'].forEach(type => document.getElementById(`toggle-${type}`).addEventListener('change', e => {
-        if (e.target.checked) {
-            map.addLayer(mapState.layerGroups[type]);
-            map.attributionControl.addAttribution(ATTR[type]);
-            loadAccessLayer(map, type, mapState);
-        } else {
-            map.removeLayer(mapState.layerGroups[type]);
-            map.attributionControl.removeAttribution(ATTR[type]);
-        }
-    }));
 
     fetch('https://firebasestorage.googleapis.com/v0/b/naturecitynorwich.firebasestorage.app/o/Assets%2FNORWICH_DISTRICT_BOUNDARY_SIMPLE_4326.geojson?alt=media&token=f0e6fc5c-3135-4d1f-b48b-879924c2f164')
         .then(res => res.json())
