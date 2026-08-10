@@ -42,13 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
     map.on('zoomstart', () => hideClusterPopup(mapState));
     map.on('moveend', () => updateMapLayer(map, mapState, state.taxonId));
 
-    if (!L.Browser.touch) {
-        mapState.exactPointsLayer.on('clustermouseover', e => {
-            clearTimeout(mapState.popupHoverTimeout);
-            showClusterPopup(e.layer.getAllChildMarkers(), map.latLngToContainerPoint(e.layer.getLatLng()), mapState);
-        });
-        mapState.exactPointsLayer.on('clustermouseout', () => { mapState.popupHoverTimeout = setTimeout(() => hideClusterPopup(mapState), 200); });
-    }
 
     mapState.exactPointsLayer.on('clusterclick', e => {
         clearTimeout(mapState.popupHoverTimeout);
@@ -65,8 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const clusterPopup = document.getElementById('cluster-popup');
     document.getElementById('cluster-popup-close').addEventListener('click', () => hideClusterPopup(mapState));
-    clusterPopup.addEventListener('mouseenter', () => clearTimeout(mapState.popupHoverTimeout));
-    clusterPopup.addEventListener('mouseleave', () => { mapState.popupHoverTimeout = setTimeout(() => hideClusterPopup(mapState), 200); });
 
     ['greenspace'].forEach(type => document.getElementById(`toggle-${type}`).addEventListener('change', e => {
         if (e.target.checked) {
