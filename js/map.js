@@ -56,12 +56,15 @@ export function loadAccessLayer(map, type, mapState) {
 }
 
 export function refreshGridLayer(map, mapState, taxonId) {
+    console.log("refreshGridLayer called with taxonId:", taxonId, "lastGridTaxon:", mapState.lastGridTaxon);
     if (!mapState.polygonBounds) return;
+    if (mapState.currentGridLayer && mapState.lastGridTaxon === taxonId) return;
+    mapState.lastGridTaxon = taxonId;
     if (mapState.currentGridLayer) mapState.gridTilesLayer.removeLayer(mapState.currentGridLayer);
     const sw = mapState.polygonBounds.getSouthWest(), ne = mapState.polygonBounds.getNorthEast();
     mapState.currentGridLayer = L.tileLayer(
         `https://api.inaturalist.org/v1/grid/{z}/{x}/{y}.png?taxon_id=${taxonId}&color=%23406381&swlat=${sw.lat}&swlng=${sw.lng}&nelat=${ne.lat}&nelng=${ne.lng}`,
-        { minZoom: 0, maxZoom: 19, opacity: 1 }
+        { minZoom: 0, maxZoom: 19, opacity: 1, keepBuffer: 8, updateWhenIdle: false }
     );
     mapState.gridTilesLayer.addLayer(mapState.currentGridLayer);
 }
@@ -123,6 +126,7 @@ export async function fetchPointsForCurrentView(map, mapState, taxonId) {
 }
 
 export function updateMapLayer(map, mapState, taxonId) {
+    console.log("updateMapLayer called. Zoom:", map.getZoom());
     clearTimeout(mapState.debounceTimer);
     if (map.getZoom() >= CONSTANTS.POINTS_ZOOM_THRESHOLD) {
         if (map.hasLayer(mapState.gridTilesLayer)) map.removeLayer(mapState.gridTilesLayer);

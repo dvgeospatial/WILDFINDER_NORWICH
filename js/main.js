@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 pane: 'boundaryPane'
             }).addTo(map);
             mapState.polygonBounds = boundaryLayer.getBounds();
-            const maxBounds = mapState.polygonBounds.pad(0.1);
+            const maxBounds = mapState.polygonBounds.pad(0.5);
             map.setMaxBounds(maxBounds);
 
             const panel = document.getElementById('control-panel');
