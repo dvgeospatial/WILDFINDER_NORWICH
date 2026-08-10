@@ -13,7 +13,7 @@ export async function openSpeciesModal(latinName, commonName) {
 
     const isBiological = (text) => {
         if (!text) return false;
-        const keywords = ["species", "genus", "family", "plant", "animal", "insect", "bird", "fungus", "taxonomic", "taxonomy", "moth", "butterfly", "fly", "beetle", "tree", "flower"];
+        const keywords = ["species", "genus", "family", "plant", "animal", "insect", "bird", "fungus", "taxonomic", "taxonomy", "moth", "butterfly", "fly", "beetle", "tree", "flower", "dragonfly", "dragonflies", "fish", "reptile", "amphibian", "mammal", "spider", "bug", "wasp", "bee", "ant", "shrub", "grass", "fern", "moss", "lichen", "native", "endemic", "habitat", "wildlife"];
         const lowerText = text.toLowerCase();
         return keywords.some(kw => lowerText.includes(kw));
     };
